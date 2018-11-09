@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <!-- 注解扫描 -->
+    <context:component-scan base-package="com.tedu.controller"/>
+    <!-- 注解扫描 -->
+    <context:component-scan base-package="com.tedu.aop"></context:component-scan>
+
+    <!-- 注解扫描 -->
+    <context:component-scan base-package="com.tedu.service"/>
+    <!-- 读属性文件
+            1.id表示读取属性文件的唯一名字
+            2.location表示要读取的配置（属性）文件的位置
+              classpath：表示在类路径下（resoures文件夹）
+         -->
+    <util:properties id="dbConfig" location="/WEB-INF/db.properties"/>
+
+    <!-- #{dbConfig.url}表示Spring的表达式语法 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="url" value="#{dbConfig.url}"/>
+        <property name="username" value="#{dbConfig.username}"/>
+        <property name="password" value="#{dbConfig.password}"/>
+        <property name="driverClassName"
+                  value="#{dbConfig.driverClassName}"/>
+    </bean>
+    <!-- Spring和mybatis整合 -->
+    <!-- 扫描持久层的包 -->
+    <bean id="scannerConfigurer"
+          class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.tedu.dao"/>
+    </bean>
+
+    <!-- SqlsessionFactoryBean工厂 -->
+    <bean id="factoryBean"
+          class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 依赖注入dataSource -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 配置映射文件 -->
+        <property name="mapperLocations"
+                  value="/WEB-INF/mappers/*.xml"/>
+    </bean>
+    <!-- 配置事务管理器类（切面） -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 注解驱动，处理事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+    <!--配置自动代理  -->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+    <!-- 配置视图解析器 -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--
+            prefix 表示前缀
+          suffix 表示后缀
+         -->
+        <property name="prefix" value="/web/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- mvc注解驱动（功能更加强大） -->
+    <mvc:annotation-driven/>
+
+
+    <!-- =========================================================
+        Shiro Core Components - Not Spring Specific
+        ========================================================= -->
+    <!-- Shiro's main business-tier object for web-enabled applications
+         (use DefaultSecurityManager instead when there is no web environment)-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!--引用另外一个bean-->
+        <!--1.缓存技术:缓存管理
+            2.realm : 负责获取处理数据
+        -->
+        <property name="cacheManager" ref="cacheManager"/>
+        <!-- Single realm app.  If you have multiple realms, use the 'realms' property instead. -->
+        <!--Realm 实现类 -->
+        <property name="realm" ref="jdbcRealm"/>
+        <!--<property name="sessionManager" ref="sessionManager"/>-->
+    </bean>
+
+    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <property name="sessionIdUrlRewritingEnabled" value="false"/>
+    </bean>
+
+    <!-- Let's use some enterprise caching support for better performance.  You can replace this with any enterprise
+         caching framework implementation that you like (Terracotta+Ehcache, Coherence, GigaSpaces, etc -->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <!--Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one-->
+        <!--will be creaed with a default config:-->
+        <!--<property name="cacheManager" ref="ehCacheManager"/> -->
+        <!--If you don't have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want-->
+        <!--a specific Ehcache configuration to be used, specify that here.  If you don't, a default-->
+        <!--will be used.:-->
+        <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
+    </bean>
+    <bean id="jdbcRealm" class="com.tedu.bean.ShiroRealm">
+
+    </bean>
+    <!-- Used by the SecurityManager to access security data (users, roles, etc).
+         Many other realm implementations can be used too (PropertiesRealm,
+         LdapRealm, etc. -->
+    <!--<bean id="jdbcRealm" class="org.apache.shiro.samples.spring.realm.SaltAwareJdbcRealm">-->
+    <!--<property name="name" value="jdbcRealm"/>-->
+    <!--<property name="dataSource" ref="dataSource"/>-->
+    <!--<property name="credentialsMatcher">-->
+    <!--&lt;!&ndash; The 'bootstrapDataPopulator' Sha256 hashes the password-->
+    <!--(using the username as the salt) then base64 encodes it: &ndash;&gt;-->
+    <!--<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">-->
+    <!--<property name="hashAlgorithmName" value="SHA-256"/>-->
+    <!--&lt;!&ndash; true means hex encoded, false means base64 encoded &ndash;&gt;-->
+    <!--<property name="storedCredentialsHexEncoded" value="false"/>-->
+    <!--</bean>-->
+    <!--</property>-->
+    <!--</bean>-->
+
+    <!-- =========================================================
+         Shiro Spring-specific integration
+         ========================================================= -->
+    <!-- Post processor that automatically invokes init() and destroy() methods
+         for Spring-configured Shiro objects so you don't have to
+         1) specify an init-method and destroy-method attributes for every bean
+            definition and
+         2) even know which Shiro objects require these methods to be
+            called. -->
+    <!--必须要有这样的bean来管理shiro中对象的生命周期-->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!--启用shiro注解-->
+    <!-- Enable Shiro Annotations for Spring-configured beans.  Only run after
+         the lifecycleBeanProcessor has run: -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+    <!--网络方面的-->
+    <!-- Secure Spring remoting:  Ensure any Spring Remoting method invocations can be associated
+         with a Subject for security checks. -->
+    <bean id="secureRemoteInvocationExecutor" class="org.apache.shiro.spring.remoting.SecureRemoteInvocationExecutor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+    <!--配置shiroFilte
+        1.ShiroFilter的id必须要与web.xml文件中配置的代理类的名字相同。代理类会在spring容器中获取配置好的与其名字相同的bean
+    -->
+    <!-- Define the Shiro Filter here (as a FactoryBean) instead of directly in web.xml -
+         web.xml uses the DelegatingFilterProxy to access this bean.  This allows us
+         to wire things with more control as well utilize nice Spring things such as
+         PropertiesPlaceholderConfigurer and abstract beans or anything else we might need: -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!--使用的安全过滤器-->
+        <property name="securityManager" ref="securityManager"/>
+        <!--欢迎页面-->
+        <property name="loginUrl" value="/web/index.jsp"/>
+        <!--认证登陆成功后跳转的页面-->
+        <property name="successUrl" value="/web/success.jsp"/>
+        <!--未授权的url，失败后跳转的页面-->
+        <property name="unauthorizedUrl" value="/web/fail.jsp"/>
+        <!-- The 'filters' property is not necessary since any declared javax.servlet.Filter bean
+             defined will be automatically acquired and available via its beanName in chain
+             definitions, but you can perform overrides or parent/child consolidated configuration
+             here if you like: -->
+        <!-- <property name="filters">
+            <util:map>
+                <entry key="aName" value-ref="someFilterPojo"/>
+            </util:map>
+        </property> -->
+        <!--代表我们要完成的shiro过滤器的具体配置-->
+        <property name="filterChainDefinitions">
+            <value>
+                <!--anon未经认证可以访问的资源-->
+                /web/test.jsp = anon
+                /web/fail.jsp = anon
+                <!--/index.do=anon-->
+                <!--/logo.png = anon
+                /shiro.css = anon
+                /s/login = anon
+                # allow WebStart to pull the jars for the swing app:
+                /*.jar = anon
+                # protected using SecureRemoteInvocationExecutor
+                /remoting/** = anon
+                # everything else requires authentication:-->
+                <!--必须经过验证后才可以访问-->
+                /** = authc
+            </value>
+        </property>
+    </bean>
+</beans>

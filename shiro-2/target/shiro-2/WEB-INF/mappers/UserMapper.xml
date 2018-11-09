@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+	<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+	<!-- namespace表示命名空间 ，值必须为接口的名称（包括包名）-->
+	<!-- 实现类没有，mybatis框架会生成接口的实现类 -->
+	<mapper namespace="com.tedu.dao.UserMapper">
+		<!-- 插入用户信息 -->
+		<!-- void insertUser(User user); -->
+		<insert id="insertUser" parameterType="com.tedu.bean.User">
+		
+		insert into t_user (
+			username,password,email,phone,
+			created_user,created_time,
+			modified_user,modified_time
+		)values(
+			#{username},#{password},#{email},#{phone},
+			#{createdUser},#{createdTime},
+			#{modifiedUser},#{modifiedTime}
+		)
+
+	</insert>
+	<!-- 根据用户名查询 -->
+	<!-- User selectByUsername(String username); -->
+	<select id="selectByUsername" 
+			resultType="com.tedu.bean.User">
+		select 
+			id,username,password,email,phone,image,gender,
+			created_user createdUser,created_time createdTime,
+			modified_user modifiedUser,
+			modified_time modifiedTime
+		from
+			t_user
+		where
+			username = #{username}
+	</select>
+	<!-- 通过邮箱查询 -->
+	<!-- Integer selectByEmail(String email); -->
+	<select id="selectByEmail" 
+			resultType="java.lang.Integer">
+		select count(*)
+		from
+			t_user
+		where
+			email = #{email}		
+	</select>
+	<!-- 通过电话查询 -->
+	<!-- Integer selectByPhone(String phone); -->
+	<select id="selectByPhone" 
+			resultType="java.lang.Integer">
+		select count(*)
+		from
+			t_user
+		where
+			phone = #{phone}		
+	</select>
+	<!-- 修改用户信息 -->
+	<!-- void updateUser(User user); -->
+	<update id="updateUser" 
+			parameterType="com.tedu.bean.User">
+		update 
+			t_user
+		<set>
+			<if test="password!=null">
+				password=#{password},
+			</if>
+			<if test="username!=null">
+				username=#{username},
+			</if>
+			<if test="gender!=null">
+				gender=#{gender},
+			</if>
+			<if test="phone!=null">
+				phone=#{phone},
+			</if>
+			<if test="email!=null">
+				email=#{email},
+			</if>
+			<if test="modifiedUser!=null">
+				modified_user=#{modifiedUser},
+			</if>
+			<if test="modifiedTime!=null">
+				modified_time = #{modifiedTime}
+			</if>
+		</set>
+		where
+			id=#{id}
+	</update>
+	<!-- 根据id查询用户信息 -->
+	<!-- User selectUserById(Integer id) -->
+	<select id="selectUserById" 
+			resultType="com.tedu.bean.User">
+		select 
+			id,username,password,email,phone,image,gender,
+			created_user createdUser,created_time createdTime,
+			modified_user modifiedUser,
+			modified_time modifiedTime
+		from
+			t_user
+		where
+			id = #{id}		
+	</select>
+	<!--更改图片  -->
+	<!-- void updateImage(@Param("id") Integer id,@Param("image")String image); -->
+	<update id="updateImage">
+	update t_user set image=#{image} where id=#{id}
+	</update>
+	</mapper>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

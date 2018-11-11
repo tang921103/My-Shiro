@@ -27,12 +27,14 @@ public class User implements Serializable{
 		return username;
 	}
 	public void setUsername(String username) {
+		System.out.println("setUsername");
 		this.username = username;
 	}
 	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
+		System.out.println("setPassword");
 		this.password = password;
 	}
 	public String getEmail() {

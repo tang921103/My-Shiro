@@ -11,6 +11,10 @@
     <title>Title</title>
 </head>
 <body>
-Login
+<form action="/shiro/toLogin.do" method="get">
+    username:<input type="text" name="username"><br>
+    password:<input type="password" name="password"><br>
+    <input type="submit" value="提交"/>
+</form>
 </body>
 </html>

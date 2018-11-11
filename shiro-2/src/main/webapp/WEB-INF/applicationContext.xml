@@ -20,7 +20,7 @@
     <util:properties id="dbConfig" location="/WEB-INF/db.properties"/>
 
     <!-- #{dbConfig.url}表示Spring的表达式语法 -->
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="url" value="#{dbConfig.url}"/>
         <property name="username" value="#{dbConfig.username}"/>
         <property name="password" value="#{dbConfig.password}"/>
@@ -99,7 +99,12 @@
         <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
     </bean>
     <bean id="jdbcRealm" class="com.tedu.bean.ShiroRealm">
-
+            <property name="credentialsMatcher">
+                <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                    <property name="hashAlgorithmName" value="MD5"></property>
+                    <property name="hashIterations" value="1024"></property>
+                </bean>
+            </property>
     </bean>
     <!-- Used by the SecurityManager to access security data (users, roles, etc).
          Many other realm implementations can be used too (PropertiesRealm,
@@ -150,7 +155,8 @@
          web.xml uses the DelegatingFilterProxy to access this bean.  This allows us
          to wire things with more control as well utilize nice Spring things such as
          PropertiesPlaceholderConfigurer and abstract beans or anything else we might need: -->
-    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+    <!--shiro中真正的Filter-->
+    <bean id="filter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <!--使用的安全过滤器-->
         <property name="securityManager" ref="securityManager"/>
         <!--欢迎页面-->
@@ -170,9 +176,21 @@
         </property> -->
         <!--代表我们要完成的shiro过滤器的具体配置-->
         <property name="filterChainDefinitions">
+            <!--通配符规则：1.？ 一个字符 /admin1  /admin2
+                            2.*  零个或者多个字符 /*
+                            3.**  匹配路径中的零个或者多个路径 /** /a/b/c
+                            URL匹配采取第一次匹配优先的规则。即：按照配置顺序选择过滤器
+            -->
             <value>
+                <!--格式：URL=过滤器名-->
+                <!--前面是资源路径（不包含转发）-->
                 <!--anon未经认证可以访问的资源-->
                 /web/test.jsp = anon
+                <!--/web/login.jsp=anon-->
+               /test.do=anon
+                /login.do=anon
+                /toLogin.do=anon
+                /logout.do=logout
                 <!--/index.do=anon-->
                 <!--/logo.png = anon
                 /shiro.css = anon

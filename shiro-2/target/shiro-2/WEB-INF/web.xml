@@ -8,6 +8,7 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/applicationContext.xml</param-value>
   </context-param>
+
   <filter>
     <filter-name>encoding</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -16,9 +17,16 @@
       <param-value>utf-8</param-value>
     </init-param>
   </filter>
+  <!--到spring容器中去找与filter-name名字相同的bean(如果配置了targetBeanName，则去找对应的value)-->
+  <!--这是spring框架中的Filter，是代理类-->
+  <!--如果我们的安全框架采用的是其他的，并不是shiro的话，它会自动找到相应的Filter,降低代码的耦合度，提高复用性-->
   <filter>
     <filter-name>shiroFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+      <param-name>targetBeanName</param-name>
+      <param-value>filter</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>encoding</filter-name>

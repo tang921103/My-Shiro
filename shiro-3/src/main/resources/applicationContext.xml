@@ -45,10 +45,25 @@
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="cacheManager" ref="cacheManager"/>
         <!-- Single realm app.  If you have multiple realms, use the 'realms' property instead. -->
-        <property name="realm" ref="jdbcRealm"/>
+       <!-- <property name="realm" ref="jdbcRealm"/>-->
+        <property name="authenticator" ref="authenticator"></property>
+        <property name="authorizer" ref="authorizer"></property>
         <property name="sessionManager" ref="sessionManager"/>
     </bean>
-
+        <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+            <property name="realms">
+                <list>
+                   <ref bean="jdbcRealm"></ref>
+                </list>
+            </property>
+        </bean>
+    <bean id="authorizer" class="org.apache.shiro.authz.ModularRealmAuthorizer">
+        <property name="realms">
+            <list>
+                <ref bean="jdbcRealm"></ref>
+            </list>
+        </property>
+    </bean>
     <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
         <property name="sessionIdUrlRewritingEnabled" value="false"/>
     </bean>
@@ -123,8 +138,11 @@
                 /favicon.ico = anon
                 /logo.png = anon
                 /shiro.css = anon
-                /s/login = anon
                 /login.do=anon
+                /showIndex.do=anon
+                /showLogin.do=anon
+                /success.do=anon
+                /logout.do=logout
                 # allow WebStart to pull the jars for the swing app:
                 /*.jar = anon
                 # protected using SecureRemoteInvocationExecutor

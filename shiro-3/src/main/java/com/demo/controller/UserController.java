@@ -40,4 +40,16 @@ public class UserController {
         }
         return  map;
     }
+    @RequestMapping("/showIndex.do")
+    public String index(){
+        return "index";
+    }
+    @RequestMapping("/showLogin.do")
+    public String showLogin(){
+        return "login";
+    }
+    @RequestMapping("/success.do")
+    public String showSuccess(){
+        return "success";
+    }
 }

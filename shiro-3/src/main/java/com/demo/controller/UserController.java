@@ -8,6 +8,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,16 +28,18 @@ public class UserController {
         System.out.println("login");
         UsernamePasswordToken token = new UsernamePasswordToken(username,password);
         Subject subject = SecurityUtils.getSubject();
-        try{
-            subject.login(token);
-            map = MessageUtil.getRightMSg(null);
-        }catch (UnknownAccountException e){
-            map = MessageUtil.getErrorMSg(null);
-        }catch(IncorrectCredentialsException e){
-            map = MessageUtil.getErrorMSg(null);
-            System.out.println("密码不对");
-        }catch(AuthenticationException e){
-            map = MessageUtil.getErrorMSg(null);
+        if(!subject.isAuthenticated()){
+            try{
+                subject.login(token);
+                map = MessageUtil.getRightMSg(null);
+            }catch (UnknownAccountException e){
+                map = MessageUtil.getErrorMSg(null);
+            }catch(IncorrectCredentialsException e){
+                map = MessageUtil.getErrorMSg(null);
+                System.out.println("密码不对");
+            }catch(AuthenticationException e){
+                map = MessageUtil.getErrorMSg(null);
+            }
         }
         return  map;
     }
@@ -51,5 +54,16 @@ public class UserController {
     @RequestMapping("/success.do")
     public String showSuccess(){
         return "success";
+    }
+
+    @RequestMapping("/admin.do")
+    @RequiresRoles("admin")
+    public String admin(){
+        return "admin";
+    }
+    @RequiresRoles("guest")
+    @RequestMapping("/guest.do")
+    public String guest(){
+        return "guest";
     }
 }

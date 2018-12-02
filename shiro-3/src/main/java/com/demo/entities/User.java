@@ -23,6 +23,8 @@ public class User {
 
     private String modifiedTime;
 
+    private String roles;
+
     public Integer getId() {
         return id;
     }
@@ -111,6 +113,14 @@ public class User {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles == null ? null : roles.trim();
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -125,6 +135,7 @@ public class User {
                 ", createdTime='" + createdTime + '\'' +
                 ", modifiedUser='" + modifiedUser + '\'' +
                 ", modifiedTime='" + modifiedTime + '\'' +
+                ", roles='" + roles + '\'' +
                 '}';
     }
 }

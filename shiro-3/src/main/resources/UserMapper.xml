@@ -13,6 +13,7 @@
     <result column="created_time" jdbcType="VARCHAR" property="createdTime" />
     <result column="modified_user" jdbcType="VARCHAR" property="modifiedUser" />
     <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
+    <result column="roles" jdbcType="VARCHAR" property="roles" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -74,7 +75,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, username, password, email, phone, image, gender, created_user, created_time, 
-    modified_user, modified_time
+    modified_user, modified_time, roles
   </sql>
   <select id="selectByExample" parameterType="com.demo.entities.UserExample" resultMap="BaseResultMap">
     select
@@ -110,11 +111,13 @@
     insert into t_user (id, username, password, 
       email, phone, image, 
       gender, created_user, created_time, 
-      modified_user, modified_time)
+      modified_user, modified_time, roles
+      )
     values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, 
       #{gender,jdbcType=VARCHAR}, #{createdUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=VARCHAR}, 
-      #{modifiedUser,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+      #{modifiedUser,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}, #{roles,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.demo.entities.User">
     insert into t_user
@@ -152,6 +155,9 @@
       <if test="modifiedTime != null">
         modified_time,
       </if>
+      <if test="roles != null">
+        roles,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -186,6 +192,9 @@
       </if>
       <if test="modifiedTime != null">
         #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+      <if test="roles != null">
+        #{roles,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -231,6 +240,9 @@
       <if test="record.modifiedTime != null">
         modified_time = #{record.modifiedTime,jdbcType=VARCHAR},
       </if>
+      <if test="record.roles != null">
+        roles = #{record.roles,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -248,7 +260,8 @@
       created_user = #{record.createdUser,jdbcType=VARCHAR},
       created_time = #{record.createdTime,jdbcType=VARCHAR},
       modified_user = #{record.modifiedUser,jdbcType=VARCHAR},
-      modified_time = #{record.modifiedTime,jdbcType=VARCHAR}
+      modified_time = #{record.modifiedTime,jdbcType=VARCHAR},
+      roles = #{record.roles,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -286,6 +299,9 @@
       <if test="modifiedTime != null">
         modified_time = #{modifiedTime,jdbcType=VARCHAR},
       </if>
+      <if test="roles != null">
+        roles = #{roles,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -300,7 +316,8 @@
       created_user = #{createdUser,jdbcType=VARCHAR},
       created_time = #{createdTime,jdbcType=VARCHAR},
       modified_user = #{modifiedUser,jdbcType=VARCHAR},
-      modified_time = #{modifiedTime,jdbcType=VARCHAR}
+      modified_time = #{modifiedTime,jdbcType=VARCHAR},
+      roles = #{roles,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

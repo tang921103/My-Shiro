@@ -1,3 +1,4 @@
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: Administrator
@@ -16,6 +17,14 @@
     </div>
 <div>
     <input type="button" value="退出" onclick="logout"/>
+    <hr>
+    <a href="admin.do">admin</a>
+    <hr>
+    <a href="guest.do">guest</a>
+    <hr>
+    <shiro:hasRole name="admin">有admin权限的才能看得见</shiro:hasRole>
+    <shiro:hasRole name="guest">有guest权限的才能看得见</shiro:hasRole>
+
 </div>
 </body>
 <script type="text/javascript">

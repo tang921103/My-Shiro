@@ -143,6 +143,8 @@
                 /showLogin.do=anon
                 /success.do=anon
                 /logout.do=logout
+               <!-- /admin.do=roles[admin]
+                /guest.do=roles[guest]-->
                 # allow WebStart to pull the jars for the swing app:
                 /*.jar = anon
                 # protected using SecureRemoteInvocationExecutor

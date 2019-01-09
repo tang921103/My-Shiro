@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 /**
  * 异常处理
  */
-@ControllerAdvice
+//@ControllerAdvice
 public class MyExceptionHanlder {
     private Logger logger = LoggerFactory.getLogger(MyExceptionHanlder.class);
     @ExceptionHandler(value = {IncorrectCredentialsException.class,

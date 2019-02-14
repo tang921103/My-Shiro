@@ -1,5 +1,6 @@
 package com.demo.congif.shiro;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -8,6 +9,7 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -106,5 +108,13 @@ public class ShiroConfiguration {
         advisor.setSecurityManager(securityManager);
         return advisor;
     }
-
+    @Bean
+    public ShiroDialect shiroDialect(){
+        return  new ShiroDialect();
+    }
+//    @Bean
+//    public SpringTemplateEngine springTemplateEngine(){
+//        SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
+//        springTemplateEngine.setTemplateResolver();
+//    }
 }

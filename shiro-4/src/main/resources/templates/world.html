@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
     <meta charset="UTF-8">
     <title>world</title>
 </head>
 <body>
 <div>world</div>
+<shiro:hasRole name="admin">
+    <div>模板1</div>
+</shiro:hasRole>
+<shiro:hasPermission name="query">
+    <div>模板2</div>
+</shiro:hasPermission>
+<shiro:hasRole name="guest">
+    <div>模板3</div>
+</shiro:hasRole>
+<shiro:hasPermission name="delete">
+    <div>模板4</div>
+</shiro:hasPermission>
+
 </body>
 </html>
